@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="description" content="SAHAS is a private, anonymous space for student support. No account, no history, just a place to talk.">
+  <title>SAHAS - My Secret Friend</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --night: #0a0a0f;
+      --surface: rgba(20, 20, 31, .76);
+      --surface-soft: rgba(255, 255, 255, .045);
+      --border: rgba(255, 255, 255, .1);
+      --text: #f5f3ff;
+      --muted: #a5a3b4;
+      --purple: #a78bfa;
+      --blue: #60a5fa;
+      --green: #6ee7a5;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--night);
+      color: var(--text);
+    }
+
+    button, textarea { font: inherit; }
+    button { color: inherit; }
+
+    .ambient {
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 50% -20%, rgba(69, 51, 122, .2), transparent 50%),
+        radial-gradient(ellipse at 90% 90%, rgba(27, 73, 111, .12), transparent 42%),
+        var(--night);
+    }
+
+    .blob {
+      position: absolute;
+      width: 280px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: .44;
+      transform: translate3d(0, 0, 0);
+      animation: float 22s ease-in-out infinite;
+      will-change: transform;
+    }
+
+    .blob-one { top: 8%; left: 8%; background: #6845b8; animation-duration: 21s; }
+    .blob-two { top: 35%; right: 4%; background: #245eaa; animation-duration: 25s; animation-delay: -8s; }
+    .blob-three { bottom: -12%; left: 42%; background: #4a347c; animation-duration: 18s; animation-delay: -4s; }
+
+    @keyframes float {
+      0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+      50% { transform: translate3d(38px, -28px, 0) scale(1.1); }
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes blink { 50% { opacity: .35; } }
+    @keyframes moodIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translate3d(0, 14px, 0) scale(.97); }
+      to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    }
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-6px); }
+    }
+    @keyframes panicPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(248, 113, 113, .08); }
+      50% { box-shadow: 0 0 0 6px rgba(248, 113, 113, .05); }
+    }
+
+    .shell {
+      width: min(1220px, calc(100% - 48px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      min-height: 88px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, .055);
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text); }
+    .logo-mark {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(167, 139, 250, .25), rgba(96, 165, 250, .08));
+      color: white;
+      font-size: 20px;
+      font-weight: 800;
+      animation: spin 8s linear infinite;
+      will-change: transform;
+    }
+
+    .brand-name { font-size: 15px; font-weight: 800; letter-spacing: 0; }
+    .brand-tag { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; font-weight: 500; }
+
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .035);
+      color: #d6d3e2;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .live-dot { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: var(--green); animation: blink 1.6s ease-in-out infinite; }
+
+    .panic-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 12px;
+      border: 1px solid rgba(248, 113, 113, .22);
+      border-radius: 999px;
+      background: rgba(248, 113, 113, .06);
+      color: #fca5a5;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+      animation: panicPulse 3.2s ease-in-out infinite;
+      transition: background .2s ease, transform .2s ease;
+    }
+
+    .panic-button:hover { transform: translateY(-2px); background: rgba(248, 113, 113, .12); }
+
+    main { padding: 74px 0 56px; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, .92fr) minmax(420px, 1.08fr);
+      align-items: center;
+      gap: clamp(42px, 7vw, 94px);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 24px;
+      color: #c4b5fd;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before { width: 20px; height: 1px; background: linear-gradient(90deg, var(--purple), var(--blue)); content: ''; }
+
+    h1 {
+      max-width: 590px;
+      margin: 0;
+      font-size: clamp(42px, 5vw, 56px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1.1;
+    }
+
+    .gradient-text { color: #c4b5fd; background: linear-gradient(105deg, #c4b5fd 15%, #a5b4fc 55%, #7dd3fc); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .intro-copy { max-width: 450px; margin: 22px 0 0; color: #b5b2c4; font-size: 15px; line-height: 1.8; }
+    .intro-copy strong { color: #e7e3f6; font-weight: 700; }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 36px;
+    }
+
+    .feature {
+      min-height: 106px;
+      padding: 17px 16px;
+      border: 1px solid rgba(255, 255, 255, .075);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .035);
+      transition: transform .25s ease, border-color .25s ease, background .25s ease;
+    }
+
+    .feature:hover { transform: translateY(-4px) scale(1.02); border-color: rgba(167, 139, 250, .3); background: rgba(255, 255, 255, .06); }
+    .feature-icon { display: block; margin-bottom: 10px; color: #b8a4ff; font-size: 17px; }
+    .feature h3 { margin: 0; font-size: 12px; font-weight: 700; }
+    .feature p { margin: 5px 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
+
+    .chat-card {
+      position: relative;
+      display: flex;
+      height: 640px;
+      min-height: 560px;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background: var(--surface);
+      box-shadow: 0 28px 90px rgba(0, 0, 0, .35), inset 0 1px rgba(255, 255, 255, .04);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+    }
+
+    .mood-bar { height: 3px; flex: 0 0 auto; transform: scaleX(1); transform-origin: left; background: linear-gradient(90deg, var(--purple), var(--blue)); animation: moodIn .8s cubic-bezier(.16, 1, .3, 1) both; }
+
+    .chat-head {
+      display: flex;
+      min-height: 76px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, .07);
+    }
+
+    .assistant-id { display: flex; align-items: center; gap: 11px; }
+    .assistant-avatar { display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid rgba(167, 139, 250, .3); border-radius: 14px; background: linear-gradient(145deg, rgba(167, 139, 250, .28), rgba(96, 165, 250, .12)); font-size: 17px; }
+    .assistant-title { margin: 0; font-size: 13px; font-weight: 700; }
+    .assistant-status { display: flex; align-items: center; gap: 6px; margin-top: 4px; color: #aaa7b8; font-size: 10px; }
+    .assistant-status .live-dot { width: 6px; height: 6px; }
+    .chat-tools { display: flex; align-items: center; gap: 11px; }
+    .online-count { color: #c2bfd0; font-size: 10px; white-space: nowrap; }
+    .icon-button { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid transparent; border-radius: 11px; background: transparent; color: #aaa7b8; cursor: pointer; transition: background .2s ease, color .2s ease; }
+    .icon-button:hover { background: rgba(255, 255, 255, .07); color: white; }
+
+    .chat-box {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 14px;
+      overflow: auto;
+      padding: 22px 20px 15px;
+      scrollbar-color: rgba(255, 255, 255, .18) transparent;
+      scrollbar-width: thin;
+    }
+
+    .welcome-note { align-self: center; max-width: 270px; margin: 3px 0 5px; color: #888597; font-size: 10px; line-height: 1.6; text-align: center; }
+    .message-row { display: flex; width: 100%; align-items: flex-end; gap: 8px; animation: msgIn .42s cubic-bezier(.16, 1, .3, 1) both; }
+    .message-row.user { justify-content: flex-end; }
+    .message-avatar { display: grid; width: 25px; height: 25px; flex: 0 0 auto; place-items: center; border: 1px solid rgba(255, 255, 255, .09); border-radius: 9px; background: rgba(255, 255, 255, .06); color: #c4b5fd; font-size: 11px; }
+    .message-bubble { max-width: min(82%, 365px); padding: 12px 14px; border: 1px solid rgba(255, 255, 255, .08); border-radius: 16px 16px 16px 5px; background: rgba(255, 255, 255, .055); color: #e9e6f2; font-size: 12px; line-height: 1.7; white-space: pre-line; overflow-wrap: anywhere; }
+    .user .message-bubble { border-color: rgba(167, 139, 250, .25); border-radius: 16px 16px 5px 16px; background: linear-gradient(120deg, rgba(135, 103, 222, .9), rgba(76, 124, 196, .9)); color: #fff; }
+    .crisis-bubble { border-color: rgba(248, 113, 113, .25); background: rgba(127, 29, 29, .2); }
+
+    .typing { display: inline-flex; align-items: center; gap: 4px; min-height: 39px; padding: 0 14px; }
+    .typing span { width: 5px; height: 5px; border-radius: 50%; background: #b5a5ee; animation: bounce 1s ease-in-out infinite; }
+    .typing span:nth-child(2) { animation-delay: .2s; }
+    .typing span:nth-child(3) { animation-delay: .4s; }
+
+    .prompt-chips { display: flex; gap: 7px; overflow-x: auto; padding: 0 18px 11px; scrollbar-width: none; }
+    .prompt-chips::-webkit-scrollbar { display: none; }
+    .chip { flex: 0 0 auto; padding: 7px 10px; border: 1px solid rgba(255, 255, 255, .1); border-radius: 999px; background: rgba(255, 255, 255, .035); color: #c7c2d7; cursor: pointer; font-size: 10px; transition: background .2s ease, border-color .2s ease, transform .2s ease; }
+    .chip:hover { transform: translateY(-1px); border-color: rgba(167, 139, 250, .4); background: rgba(167, 139, 250, .1); }
+
+    .composer { padding: 0 16px 15px; }
+    .input-wrap { display: flex; min-height: 54px; align-items: flex-end; gap: 8px; padding: 7px; border: 1px solid rgba(255, 255, 255, .11); border-radius: 17px; background: rgba(9, 9, 15, .55); transition: border-color .2s ease, box-shadow .2s ease; }
+    .input-wrap:focus-within { border-color: rgba(167, 139, 250, .48); box-shadow: 0 0 0 3px rgba(167, 139, 250, .08); }
+    #messageInput { width: 100%; max-height: 110px; min-height: 36px; resize: none; border: 0; outline: 0; background: transparent; color: white; padding: 9px 8px; font-size: 12px; line-height: 1.5; }
+    #messageInput::placeholder { color: #777486; }
+    .send-button, .voice-button { display: grid; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; border: 0; border-radius: 12px; cursor: pointer; transition: transform .25s cubic-bezier(.16, 1, .3, 1), filter .2s ease, background .2s ease; }
+    .voice-button { background: rgba(255, 255, 255, .07); font-size: 16px; }
+    .voice-button:hover { transform: translateY(-1px); background: rgba(255, 255, 255, .12); }
+    .voice-button.listening { background: rgba(248, 113, 113, .18); box-shadow: 0 0 0 3px rgba(248, 113, 113, .1); }
+    .send-button { background: linear-gradient(135deg, #9b7af0, #5798e8); color: white; font-size: 16px; }
+    .send-button:hover { transform: scale(1.1) rotate(12deg); filter: brightness(1.12); }
+    .send-button:active { transform: scale(.97); }
+    .privacy-note { margin: 9px 0 0; color: #777486; font-size: 9px; line-height: 1.5; text-align: center; }
+    .voice-status { min-height: 0; margin: 0; color: #c4b5fd; font-size: 10px; line-height: 1.5; text-align: center; }
+    .voice-status:empty { display: none; }
+
+    footer { display: flex; min-height: 65px; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid rgba(255, 255, 255, .055); color: #777486; font-size: 10px; }
+    footer strong { color: #c8c4d5; font-weight: 700; }
+    .footer-right { text-align: right; }
+
+    .panic-screen { min-height: 100vh; padding: 8vh 8vw; background: #fff; color: #202124; font-family: Arial, sans-serif; }
+    .panic-screen .fake-search-logo { margin: 6vh auto 30px; color: #4285f4; font-size: 54px; font-weight: 600; text-align: center; }
+    .panic-screen .fake-search { max-width: 580px; margin: auto; padding: 15px 22px; border: 1px solid #dadce0; border-radius: 28px; color: #5f6368; font-size: 15px; box-shadow: 0 1px 6px rgba(32, 33, 36, .18); }
+    .panic-screen p { max-width: 580px; margin: 18px auto; color: #5f6368; font-size: 13px; }
+
+    @media (max-width: 920px) {
+      .layout { grid-template-columns: minmax(0, 1fr) minmax(360px, .95fr); gap: 34px; }
+      h1 { font-size: 46px; }
+    }
+
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 32px, 560px); }
+      .topbar { min-height: 74px; }
+      .trust-badge { display: none; }
+      main { padding: 48px 0 40px; }
+      .layout { grid-template-columns: minmax(0, 1fr); gap: 34px; }
+      .intro-copy { font-size: 14px; }
+      .feature-grid { margin-top: 25px; }
+      .chat-card { height: min(640px, 76vh); min-height: 520px; }
+      footer { align-items: flex-start; flex-direction: column; justify-content: center; gap: 7px; padding: 14px 0; }
+      .footer-right { text-align: left; }
+    }
+
+    @media (max-width: 420px) {
+      .shell { width: calc(100% - 24px); }
+      h1 { font-size: 40px; }
+      .eyebrow { margin-bottom: 18px; }
+      .feature { min-height: 101px; padding: 14px 12px; }
+      .chat-card { border-radius: 23px; }
+      .chat-head { padding: 0 14px; }
+      .chat-box { padding-right: 13px; padding-left: 13px; }
+      .composer { padding-right: 11px; padding-left: 11px; }
+      .online-count { font-size: 9px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <span class="blob blob-one"></span>
+    <span class="blob blob-two"></span>
+    <span class="blob blob-three"></span>
+  </div>
+
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="SAHAS home">
+        <span class="logo-mark" aria-hidden="true">S</span>
+        <span><span class="brand-name">SAHAS</span><span class="brand-tag">My Secret Friend</span></span>
+      </a>
+      <div class="trust-badge"><span class="live-dot"></span><span>Anonymous • Stateless • No History • <span id="topLiveCount">1287</span> online</span></div>
+      <button class="panic-button" type="button" onclick="panic()" aria-label="Quick exit to Google">↗ <span>Quick exit</span></button>
+    </header>
+
+    <main id="top">
+      <div class="layout">
+        <section class="intro" aria-labelledby="hero-title">
+          <div class="eyebrow">A little courage, whenever you need it</div>
+          <h1 id="hero-title">Ask anything.<br>Your doubts <span class="gradient-text">stay yours.</span></h1>
+          <p class="intro-copy"><strong>SAHAS</strong> means courage in Sanskrit: <strong>Safe Anonymous Help And Support.</strong> A quiet place to talk through college life, one small step at a time.</p>
+
+          <div class="feature-grid" aria-label="SAHAS features">
+            <article class="feature"><span class="feature-icon" aria-hidden="true">◌</span><h3>No History</h3><p>Your chat stays in this tab and disappears when cleared.</p></article>
+            <article class="feature"><span class="feature-icon" aria-hidden="true">◇</span><h3>Anonymous</h3><p>No account. No name needed. Just start where you are.</p></article>
+            <article class="feature"><span class="feature-icon" aria-hidden="true">✳</span><h3>Instant</h3><p>A friendly reply, with one small next step.</p></article>
+            <article class="feature"><span class="feature-icon" aria-hidden="true">文</span><h3>Multilingual</h3><p>English, Telugu, Hindi, or Tamil. Your words, your way.</p></article>
+          </div>
+        </section>
+
+        <section class="chat-card" aria-label="Chat with SAHAS">
+          <div class="mood-bar" aria-hidden="true"></div>
+          <header class="chat-head">
+            <div class="assistant-id">
+              <div class="assistant-avatar" aria-hidden="true">✦</div>
+              <div><h2 class="assistant-title">Your secret friend</h2><div class="assistant-status"><span class="live-dot"></span>Here with you</div></div>
+            </div>
+            <div class="chat-tools">
+              <span class="online-count"><span id="chatLiveCount">1287</span> here now</span>
+              <button class="icon-button" type="button" onclick="clearChat()" title="Clear chat" aria-label="Clear chat">⌫</button>
+            </div>
+          </header>
+
+          <div class="chat-box" id="chatBox" aria-live="polite" aria-label="Conversation">
+            <p class="welcome-note">This is a private, browser-only chat. It is not saved or sent anywhere.</p>
+            <div class="message-row bot">
+              <span class="message-avatar" aria-hidden="true">S</span>
+              <div class="message-bubble">Hey, I’m here. College can feel like a lot sometimes. What’s on your mind?</div>
+            </div>
+          </div>
+
+          <div class="prompt-chips" aria-label="Quick prompts">
+            <button class="chip" type="button" data-prompt="I have backlogs and feel stuck">Backlogs</button>
+            <button class="chip" type="button" data-prompt="I have been feeling lonely">Lonely</button>
+            <button class="chip" type="button" data-prompt="I am worried about my attendance">Attendance</button>
+            <button class="chip" type="button" data-prompt="నాకు కొంచెం సహాయం కావాలి">Telugu</button>
+            <button class="chip" type="button" data-prompt="मुझे थोड़ी मदद चाहिए">Hindi</button>
+          </div>
+
+          <form class="composer" id="chatForm">
+            <div class="input-wrap">
+              <textarea id="messageInput" rows="1" maxlength="1000" placeholder="Type what’s on your mind..." aria-label="Your message"></textarea>
+              <button class="voice-button" id="voiceButton" type="button" onclick="toggleVoice()" title="Use voice input" aria-label="Use voice input">🎤</button>
+              <button class="send-button" type="submit" aria-label="Send message">➤</button>
+            </div>
+            <p class="voice-status" id="voiceStatus" role="status" aria-live="polite"></p>
+            <p class="privacy-note">No sign-in. No saved chat. You can clear this conversation anytime.</p>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <div><strong>SAHAS</strong> — Safe Anonymous Help And Support</div>
+      <div class="footer-right">HTML Only • Stateless • Built for Final Year Project</div>
+    </footer>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById('chatBox');
+    const messageInput = document.getElementById('messageInput');
+    const chatForm = document.getElementById('chatForm');
+    const voiceButton = document.getElementById('voiceButton');
+    const voiceStatus = document.getElementById('voiceStatus');
+    let recognition = null;
+
+    const replies = {
+      en: {
+        backlog: 'That sounds heavy, but you can take it one paper at a time. Pick the subject that feels most manageable and study for 45 minutes, then rest for 10. Which paper would you start with?',
+        lonely: 'Feeling lonely can really sting, especially on campus. Try sitting with someone at the mess or taking a short walk with a classmate today. A lot of students feel this way, even if they don’t show it. Want to tell me what’s been making it feel strongest?',
+        attendance: 'That worry can build up quickly. Check the exact attendance shortfall and ask your class advisor what options are still open. What’s the main thing making attendance difficult right now?',
+        ragging: 'I’m sorry this is happening. You deserve to feel safe. Please tell a trusted faculty member, warden, or your college anti-ragging cell today, and stay near someone you trust. Are you somewhere safe right now?',
+        anxiety: 'That sounds like a lot to carry. Try one slow breath out, then name the next tiny thing you can do in the next ten minutes. What part feels most urgent right now?',
+        default: 'I’m listening. You don’t have to explain it perfectly. What feels like the hardest part right now?'
+      },
+      te: {
+        backlog: 'Backlogs unnai ante pressure ga untundi, kani okka subject tho start cheddam. Manageable ga anipinche paper ni 45 minutes chaduvu, tarvata 10 minutes break teesuko. First ye subject try chesthav?',
+        lonely: 'Lonely ga feel avvadam chala kashtam, especially college lo. Ee roju mess lo evarithonaina kurchovadam leda classmate tho short walk try cheyyi. Chala mandi students ila feel avutharu, kani bayataki chepparu. Ee feeling eppudu ekkuva avuthundi?',
+        attendance: 'Attendance gurinchi tension ravatam natural. Exact percentage check chesi, class advisor ni options gurinchi adagandi. Attendance ki main ga em obstacle avuthondi?',
+        ragging: 'Idi jarugutunnanduku sorry. Nee safety important. Trusted faculty, warden, leda college anti-ragging cell ki ivvale cheppu; nammakam unna person daggara undu. Ippudu safe place lo unnava?',
+        anxiety: 'Chala pressure ga undochu. Oka slow breath bayataki vadili, next 10 minutes lo cheyyagalige chinna pani okati choose cheyyi. Ippudu ekkuva tension deni gurinchi?',
+        default: 'Nenu vintunnanu. Perfect ga explain cheyyalsina avasaram ledu. Ippudu hardest ga anipistunna vishayam enti?'
+      },
+      hi: {
+        backlog: 'Backlogs ka pressure kaafi lag sakta hai, par ek subject se shuru karte hain. Jo paper manageable lage, usse 45 minute padho, phir 10 minute ka break lo. Pehle kis subject se shuru karoge?',
+        lonely: 'Lonely feel karna sach mein mushkil hota hai, khaaskar college mein. Aaj mess mein kisi ke saath baitho ya classmate ke saath chhoti walk try karo. Bahut students aisa feel karte hain, bas dikhate nahi. Ye feeling sabse zyada kab aati hai?',
+        attendance: 'Attendance ki tension badh sakti hai. Exact percentage check karo aur class advisor se available options poochho. Attendance mein sabse badi dikkat kya aa rahi hai?',
+        ragging: 'Mujhe afsos hai ki ye ho raha hai. Tumhari safety zaroori hai. Aaj hi trusted faculty, warden, ya college anti-ragging cell ko batao, aur kisi bharosemand insaan ke paas raho. Kya tum abhi safe jagah par ho?',
+        anxiety: 'Ye sab sambhalna mushkil lag sakta hai. Dheere se saans bahar chhodo, phir agle 10 minute ka ek chhota kaam chuno. Abhi sabse zyada fikr kis baat ki hai?',
+        default: 'Main sun raha hoon. Sab kuch sahi tarah samjhana zaroori nahi. Abhi sabse mushkil kya lag raha hai?'
+      },
+      ta: {
+        backlog: 'Backlog irukkaradhu pressure-a irukkalam, aana oru subject-la start pannalaam. Manageable-a irukkura paper-a 45 minutes padi, appuram 10 minutes break edu. Mudhal-la endha subject?',
+        lonely: 'College-la lonely-a feel pannradhu romba kashtam. Innaikku mess-la yaaravadhu kooda ukkaaru illa classmate-oda oru short walk po. Neraya students ippadi feel pannuvaanga, aana solla maattaanga. Indha feeling eppo adhigama irukku?',
+        attendance: 'Attendance pathi tension varradhu puriyudhu. Exact percentage check panni, class advisor-kitta options enna-nu kelu. Attendance-ku periya obstacle enna?',
+        ragging: 'Idhu nadakkaradhu varuthama irukku. Un safety mukkiyam. Nambikkaiyana faculty, warden, illa college anti-ragging cell-kitta innaikke sollu; nambikkaiyana oruthar kooda iru. Ippo safe-a irukkiya?',
+        anxiety: 'Idhu romba heavy-a irukkalam. Methuva moochai veliya vittu, adutha 10 minutes-la panna mudinja chinna velaiya choose pannu. Ippo edhu romba worry-a irukku?',
+        default: 'Naan kekkaren. Perfect-a explain panna thevai illa. Ippo romba kashtama irukkura vishayam edhu?'
+      }
+    };
+
+    function detectLang(text) {
+      if (/[\u0C00-\u0C7F]/.test(text)) return 'te';
+      if (/[\u0900-\u097F]/.test(text)) return 'hi';
+      if (/[\u0B80-\u0BFF]/.test(text)) return 'ta';
+      const lower = text.toLowerCase();
+      if (/\b(naaku|naku|undi|unnai|ledu|kavali|chesa|avuthundi|em|ela|chavu|marana)\b/.test(lower)) return 'te';
+      if (/\b(mujhe|mera|meri|hai|nahi|kya|kaise|karna|akela|darr)\b/.test(lower)) return 'hi';
+      if (/\b(enakku|irukku|illa|enna|naan|romba|pannalaam|epdi)\b/.test(lower)) return 'ta';
+      return 'en';
+    }
+
+    function detectMood(text) {
+      const lower = text.toLowerCase();
+      const crisis = /\b(suicide|suicidal|kill myself|end my life|want to die|die|dying|chavu|chachipovali|marana|maranam|மரணம்|தற்கொலை|आत्महत्या|मरना|मर जाऊं)\b/.test(lower) || /చచ్చిపోవాలి|చావాలి|చనిపోవాలి/.test(lower);
+      if (crisis) return 'crisis';
+      if (/ragging|harass|bully|துன்புறுத்தல்|రాగింగ్|रैगिंग/.test(lower)) return 'ragging';
+      if (/backlog|arrear|supply|back paper|బ్యాక్.?లాగ్|బ్యాక్.?లాగ్స్/.test(lower)) return 'backlog';
+      if (/lonely|alone|no friends|isolated|ఒంటరి|ఒంటరిగా|अकेला|தனிமை/.test(lower)) return 'lonely';
+      if (/attendance|absent|shortage|హాజరు|उपस्थिति|வருகை/.test(lower)) return 'attendance';
+      if (/anxious|anxiety|panic|stress|overwhelmed|టెన్షన్|ఆందోళన|चिंता|घबराहट|பதட்டம்/.test(lower)) return 'anxiety';
+      return 'default';
+    }
+
+    function appendMessage(text, who, crisis = false) {
+      const row = document.createElement('div');
+      row.className = `message-row ${who}`;
+      if (who === 'bot') {
+        const avatar = document.createElement('span');
+        avatar.className = 'message-avatar';
+        avatar.setAttribute('aria-hidden', 'true');
+        avatar.textContent = 'S';
+        row.append(avatar);
+      }
+      const bubble = document.createElement('div');
+      bubble.className = `message-bubble${crisis ? ' crisis-bubble' : ''}`;
+      bubble.textContent = text;
+      row.append(bubble);
+      chatBox.append(row);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      return bubble;
+    }
+
+    function showTyping() {
+      const row = document.createElement('div');
+      row.className = 'message-row bot';
+      row.id = 'typingIndicator';
+      const avatar = document.createElement('span');
+      avatar.className = 'message-avatar';
+      avatar.textContent = 'S';
+      avatar.setAttribute('aria-hidden', 'true');
+      const dots = document.createElement('div');
+      dots.className = 'message-bubble typing';
+      dots.setAttribute('aria-label', 'SAHAS is typing');
+      dots.innerHTML = '<span></span><span></span><span></span>';
+      row.append(avatar, dots);
+      chatBox.append(row);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function makeReply(text) {
+      const language = detectLang(text);
+      const mood = detectMood(text);
+      if (mood === 'crisis') {
+        const crisisReplies = {
+          en: 'I’m really glad you told me. Please call Tele MANAS at 14416 now, and go sit with a trusted friend, warden, or family member. If you may act on these thoughts soon, go to the nearest emergency department or call local emergency services. Are you with someone right now?',
+          te: 'నాతో చెప్పినందుకు సంతోషం. ఇప్పుడే Tele MANAS 14416 కి కాల్ చెయ్యి, నమ్మకమైన స్నేహితుడు లేదా వార్డెన్ దగ్గరకు వెళ్ళు. వెంటనే ప్రమాదం అనిపిస్తే దగ్గరలోని ఎమర్జెన్సీ సహాయం తీసుకో. ఇప్పుడు నీతో ఎవరైనా ఉన్నారా?',
+          hi: 'मुझे खुशी है कि तुमने बताया। अभी Tele MANAS 14416 पर कॉल करो और किसी भरोसेमंद दोस्त, वॉर्डन या परिवार के सदस्य के पास जाओ। तुरंत खतरा लगे तो नज़दीकी इमरजेंसी सेवा लो। क्या अभी कोई तुम्हारे साथ है?',
+          ta: 'என்னிடம் சொன்னது நல்லது. இப்போதே Tele MANAS 14416-க்கு அழைத்து, நம்பிக்கையான நண்பர் அல்லது வார்டன் அருகே செல்லுங்கள். உடனடி ஆபத்து இருந்தால் அருகிலுள்ள அவசர உதவியை நாடுங்கள். இப்போது உங்களுடன் யாராவது இருக்கிறார்களா?'
+        };
+        return { text: crisisReplies[language], crisis: true };
+      }
+      return { text: replies[language][mood] || replies[language].default, crisis: false };
+    }
+
+    function speakFirstSentence(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const firstSentence = text.split(/[.!?。！？]/)[0].trim();
+      if (!firstSentence) return;
+      const utterance = new SpeechSynthesisUtterance(firstSentence);
+      const language = detectLang(text);
+      utterance.lang = { en: 'en-IN', te: 'te-IN', hi: 'hi-IN', ta: 'ta-IN' }[language];
+      utterance.rate = 0.96;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function sendMessage(text) {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+      appendMessage(trimmed, 'user');
+      messageInput.value = '';
+      messageInput.style.height = 'auto';
+      showTyping();
+      window.setTimeout(() => {
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (typingIndicator) typingIndicator.remove();
+        const reply = makeReply(trimmed);
+        appendMessage(reply.text, 'bot', reply.crisis);
+        speakFirstSentence(reply.text);
+      }, 520);
+    }
+
+    chatForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      sendMessage(messageInput.value);
+    });
+
+    messageInput.addEventListener('input', () => {
+      messageInput.style.height = 'auto';
+      messageInput.style.height = `${Math.min(messageInput.scrollHeight, 110)}px`;
+    });
+
+    messageInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        chatForm.requestSubmit();
+      }
+    });
+
+    document.querySelectorAll('.chip').forEach((chip) => {
+      chip.addEventListener('click', () => sendMessage(chip.dataset.prompt || ''));
+    });
+
+    function clearChat() {
+      window.speechSynthesis?.cancel();
+      chatBox.innerHTML = '<p class="welcome-note">This is a private, browser-only chat. It is not saved or sent anywhere.</p>';
+      appendMessage('Hey, I’m here. College can feel like a lot sometimes. What’s on your mind?', 'bot');
+      messageInput.focus();
+    }
+
+    function toggleVoice() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        voiceStatus.textContent = 'Voice input is not available in this browser. You can type your message instead.';
+        return;
+      }
+      if (recognition) {
+        recognition.stop();
+        return;
+      }
+      voiceStatus.textContent = 'Listening...';
+      recognition = new SpeechRecognition();
+      recognition.lang = 'en-IN';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      voiceButton.classList.add('listening');
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        messageInput.value = [messageInput.value.trim(), transcript].filter(Boolean).join(' ');
+        messageInput.dispatchEvent(new Event('input'));
+        messageInput.focus();
+        voiceStatus.textContent = 'Voice captured. Review your message, then send it.';
+      };
+      recognition.onerror = (event) => {
+        const messages = {
+          'no-speech': 'No speech heard. Try again or type your message.',
+          'not-allowed': 'Allow microphone access in your browser, or type your message.',
+          'service-not-allowed': 'Microphone access is blocked. Check browser permissions or type your message.',
+          'audio-capture': 'No microphone was found. You can type your message instead.',
+          network: 'Voice input could not connect. Try again or type your message.'
+        };
+        voiceStatus.textContent = messages[event.error] || 'Voice input failed. Try again or type your message.';
+      };
+      recognition.onend = () => {
+        voiceButton.classList.remove('listening');
+        recognition = null;
+      };
+      try {
+        recognition.start();
+      } catch {
+        recognition = null;
+        voiceButton.classList.remove('listening');
+        voiceStatus.textContent = 'Microphone could not start. Check browser permissions or type your message.';
+      }
+    }
+
+    function panic() {
+      if (recognition) recognition.stop();
+      window.speechSynthesis?.cancel();
+      document.body.innerHTML = '<main class="panic-screen"><div class="fake-search-logo">Google</div><div class="fake-search">Search the web</div><p>Search the web for information and helpful resources.</p></main>';
+      window.setTimeout(() => window.location.replace('https://www.google.com'), 350);
+    }
+
+    function updateLiveCount() {
+      const count = Math.floor(1200 + Math.random() * 201);
+      document.getElementById('topLiveCount').textContent = count;
+      document.getElementById('chatLiveCount').textContent = count;
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') panic();
+    });
+    window.setInterval(updateLiveCount, 5000);
+  </script>
+</body>
+</html>
