@@ -1,6 +1,7 @@
 const http = require('node:http');
 const { readFile } = require('node:fs/promises');
 const path = require('node:path');
+const { Readable } = require('node:stream');
 const dotenvResult = require('dotenv').config();
 
 if (dotenvResult.error && dotenvResult.error.code !== 'ENOENT') {
@@ -11,7 +12,7 @@ const host = process.env.HOST || '127.0.0.1';
 const port = Number.parseInt(process.env.PORT || '3000', 10);
 const model = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
 const maxRequestBytes = 24 * 1024;
-const maxAudioBytes = 15 * 1024 * 1024;
+const maxAudioBytes = 4 * 1024 * 1024;
 const maxMessageLength = 1000;
 const systemInstruction = `You are SAHAS, a supportive and realistic student companion for college life.
 Use plain, everyday language and sound warm but natural. Do not pretend to be human or claim personal experiences.
@@ -226,7 +227,7 @@ async function readAudio(request) {
   for await (const chunk of request) {
     bytes += chunk.length;
     if (bytes > maxAudioBytes) {
-      throw Object.assign(new Error('Audio recording must be 15 MB or smaller.'), { statusCode: 413 });
+      throw Object.assign(new Error('Audio recording must be 4 MB or smaller.'), { statusCode: 413 });
     }
     chunks.push(chunk);
   }
@@ -365,6 +366,47 @@ function createServer({
   });
 }
 
+function createVercelHandler(endpoint, options = {}) {
+  const handler = {
+    chat: handleChat,
+    transcribe: handleTranscription
+  }[endpoint];
+
+  if (!handler) throw new Error(`Unknown Vercel API endpoint: ${endpoint}`);
+
+  const config = {
+    apiKey: options.apiKey ?? process.env.GEMINI_API_KEY,
+    model: options.model ?? process.env.GEMINI_MODEL ?? 'gemini-3.5-flash-lite',
+    fetchImpl: options.fetchImpl ?? globalThis.fetch
+  };
+
+  return async (request) => {
+    const nodeRequest = request.body
+      ? Readable.fromWeb(request.body)
+      : Readable.from([]);
+    nodeRequest.headers = Object.fromEntries(request.headers.entries());
+    nodeRequest.method = request.method;
+
+    let statusCode = 200;
+    let responseHeaders = {};
+    let responseBody = '';
+    const nodeResponse = {
+      writeHead(status, headers) {
+        statusCode = status;
+        responseHeaders = headers;
+        return this;
+      },
+      end(body = '') {
+        responseBody = body;
+        return this;
+      }
+    };
+
+    await handler(nodeRequest, nodeResponse, config);
+    return new Response(responseBody, { status: statusCode, headers: responseHeaders });
+  };
+}
+
 if (require.main === module) {
   const server = createServer();
   server.listen(port, host, () => {
@@ -372,4 +414,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { createServer };
+module.exports = { createServer, createVercelHandler };

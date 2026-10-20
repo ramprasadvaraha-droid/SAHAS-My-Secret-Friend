@@ -41,17 +41,16 @@ SAHAS is configured to reply in English, Telugu, Hindi, or Tamil based on the la
 
 Text questions receive written replies. Select the microphone button once to start voice input and allow microphone access. SAHAS detects a short pause after you finish each spoken message, transcribes and sends it automatically, speaks its reply, and starts listening for your next message without another click. Each spoken message is also handled independently. Select the microphone again to end the voice chat. If silence is detected before speech, SAHAS resumes listening; recordings stop automatically after 60 seconds.
 
-## Deploy to Render
+## Deploy to Vercel
 
-This project includes a Render Blueprint at [`render.yaml`](./render.yaml). To deploy:
+This project uses Vercel Functions for `/api/chat` and `/api/transcribe`; the static chat page is served from the project root. To deploy:
 
 1. Push this repository to GitHub.
-2. Open the [SAHAS Render Blueprint](https://render.com/deploy?repo=https://github.com/ramprasadvaraha-droid/SAHAS-My-Secret-Friend) and sign in to Render.
-3. Review the service settings. Render will ask for `GEMINI_API_KEY`; enter your key directly into Render's private setup form. Never add it to `render.yaml` or commit it to GitHub.
-4. Select **Deploy Blueprint** and wait for the build and health check to finish.
-5. Open the public `onrender.com` URL Render displays for the service.
+2. Sign in to [Vercel](https://vercel.com/new) and import `ramprasadvaraha-droid/SAHAS-My-Secret-Friend`.
+3. In the project setup or **Settings → Environment Variables**, add `GEMINI_API_KEY` with your key. Never put the key in a source file or commit it to GitHub.
+4. Deploy the project, then open the `vercel.app` URL Vercel displays.
 
-The Blueprint runs the Node.js server with `HOST=0.0.0.0`, uses `npm ci` to install dependencies, and configures `/` as its health check. The free service may spin down when idle and take a short time to wake on the next visit. To host somewhere else, configure a Node.js web service with `npm ci`, `npm start`, `HOST=0.0.0.0`, and a private `GEMINI_API_KEY` environment variable. Hosting `index.html` alone as a static site will not provide the chat API.
+Vercel runs each API route as a Node.js Function, configured for up to 120 seconds. Audio uploads are limited to 4 MB to stay within serverless request-body limits. For local development or a traditional Node.js host, use `npm start`; the existing Render Blueprint at [`render.yaml`](./render.yaml) is also available.
 
 ## Student safety and privacy
 

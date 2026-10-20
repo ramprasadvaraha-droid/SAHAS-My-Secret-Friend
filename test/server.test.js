@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const { after, before, beforeEach, test } = require('node:test');
-const { createServer } = require('../server');
+const { createServer, createVercelHandler } = require('../server');
 
 const apiKey = 'test-api-key';
 const model = 'gemini-test-model';
@@ -108,6 +108,43 @@ test('locks replies to the question language and script', async () => {
     assert.equal(response.status, 200);
     assert.ok(body.system_instruction.includes(sample.languageInstruction), sample.text);
   }
+});
+
+test('serves chat through a Vercel Web API handler', async () => {
+  const handler = createVercelHandler('chat', {
+    apiKey,
+    model,
+    fetchImpl: async () => Response.json({
+      steps: [{ type: 'model_output', content: [{ type: 'text', text: 'A short reply.' }] }]
+    })
+  });
+  const response = await handler(new Request('https://example.test/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: [{ role: 'user', parts: [{ text: 'Hello.' }] }] })
+  }));
+
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('cache-control'), /no-store/);
+  assert.deepEqual(await response.json(), { reply: 'A short reply.' });
+});
+
+test('serves transcription through a Vercel Web API handler', async () => {
+  const handler = createVercelHandler('transcribe', {
+    apiKey,
+    model,
+    fetchImpl: async () => Response.json({
+      candidates: [{ content: { parts: [{ text: 'Hello from voice.' }] } }]
+    })
+  });
+  const response = await handler(new Request('https://example.test/api/transcribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'audio/wav' },
+    body: Buffer.from('test audio')
+  }));
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { transcript: 'Hello from voice.' });
 });
 
 test('returns only complete sentences and rejects a wholly incomplete reply', async () => {
