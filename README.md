@@ -41,9 +41,17 @@ SAHAS is configured to reply in English, Telugu, Hindi, or Tamil based on the la
 
 Text questions receive written replies. Select the microphone button once to start voice input and allow microphone access. SAHAS detects a short pause after you finish each spoken message, transcribes and sends it automatically, speaks its reply, and starts listening for your next message without another click. Each spoken message is also handled independently. Select the microphone again to end the voice chat. If silence is detected before speech, SAHAS resumes listening; recordings stop automatically after 60 seconds.
 
-## Deployment
+## Deploy to Render
 
-This project needs a Node.js host to run `server.js`; hosting `index.html` alone as a static site will not provide the `/api/chat` endpoint. Configure `GEMINI_API_KEY` as a private environment variable on your Node.js host, and set `HOST=0.0.0.0` if the host requires listening on all network interfaces. Serve the app over HTTPS in production.
+This project includes a Render Blueprint at [`render.yaml`](./render.yaml). To deploy:
+
+1. Push this repository to GitHub.
+2. Open the [SAHAS Render Blueprint](https://render.com/deploy?repo=https://github.com/ramprasadvaraha-droid/SAHAS-My-Secret-Friend) and sign in to Render.
+3. Review the service settings. Render will ask for `GEMINI_API_KEY`; enter your key directly into Render's private setup form. Never add it to `render.yaml` or commit it to GitHub.
+4. Select **Deploy Blueprint** and wait for the build and health check to finish.
+5. Open the public `onrender.com` URL Render displays for the service.
+
+The Blueprint runs the Node.js server with `HOST=0.0.0.0`, uses `npm ci` to install dependencies, and configures `/` as its health check. The free service may spin down when idle and take a short time to wake on the next visit. To host somewhere else, configure a Node.js web service with `npm ci`, `npm start`, `HOST=0.0.0.0`, and a private `GEMINI_API_KEY` environment variable. Hosting `index.html` alone as a static site will not provide the chat API.
 
 ## Student safety and privacy
 
