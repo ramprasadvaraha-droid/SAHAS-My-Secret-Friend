@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0a0a0f">
-  <meta name="description" content="SAHAS is a private, anonymous space for student support. No account, no history, just a place to talk.">
+  <meta name="description" content="SAHAS is an anonymous space for student support. No account or saved chat history; get a supportive AI reply to each question.">
   <title>SAHAS - My Secret Friend</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -156,6 +156,23 @@
     }
 
     .panic-button:hover { transform: translateY(-2px); background: rgba(248, 113, 113, .12); }
+    :focus-visible { outline: 3px solid #c4b5fd; outline-offset: 3px; }
+
+    .skip-link {
+      position: fixed;
+      z-index: 5;
+      top: 12px;
+      left: 12px;
+      padding: 11px 14px;
+      transform: translateY(-160%);
+      border-radius: 10px;
+      background: #f5f3ff;
+      color: #171321;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .skip-link:focus { transform: translateY(0); }
 
     main { padding: 74px 0 56px; }
 
@@ -192,6 +209,23 @@
     .gradient-text { color: #c4b5fd; background: linear-gradient(105deg, #c4b5fd 15%, #a5b4fc 55%, #7dd3fc); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
     .intro-copy { max-width: 450px; margin: 22px 0 0; color: #b5b2c4; font-size: 15px; line-height: 1.8; }
     .intro-copy strong { color: #e7e3f6; font-weight: 700; }
+    .intro-action { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; margin-top: 20px; }
+    .example-button { padding: 11px 15px; border: 1px solid rgba(196, 181, 253, .38); border-radius: 12px; background: linear-gradient(120deg, rgba(135, 103, 222, .9), rgba(76, 124, 196, .9)); color: #fff; cursor: pointer; font-size: 12px; font-weight: 700; transition: filter .2s ease, transform .2s ease; }
+    .example-button:hover { transform: translateY(-1px); filter: brightness(1.12); }
+    .intro-action-note { color: #b5b2c4; font-size: 11px; line-height: 1.5; }
+
+    .how-it-works {
+      max-width: 450px;
+      margin-top: 24px;
+      padding: 17px 19px;
+      border: 1px solid rgba(167, 139, 250, .18);
+      border-radius: 16px;
+      background: rgba(167, 139, 250, .055);
+    }
+
+    .how-it-works h2 { margin: 0; color: #e7e3f6; font-size: 13px; font-weight: 700; }
+    .how-it-works ol { display: grid; gap: 8px; margin: 12px 0 0; padding-left: 20px; color: #b5b2c4; font-size: 12px; line-height: 1.6; }
+    .how-it-works li::marker { color: #c4b5fd; font-weight: 700; }
 
     .feature-grid {
       display: grid;
@@ -212,7 +246,7 @@
     .feature:hover { transform: translateY(-4px) scale(1.02); border-color: rgba(167, 139, 250, .3); background: rgba(255, 255, 255, .06); }
     .feature-icon { display: block; margin-bottom: 10px; color: #b8a4ff; font-size: 17px; }
     .feature h3 { margin: 0; font-size: 12px; font-weight: 700; }
-    .feature p { margin: 5px 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
+    .feature p { margin: 5px 0 0; color: var(--muted); font-size: 11px; line-height: 1.6; }
 
     .chat-card {
       position: relative;
@@ -340,6 +374,7 @@
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#messageInput">Skip to the chat</a>
   <div class="ambient" aria-hidden="true">
     <span class="blob blob-one"></span>
     <span class="blob blob-two"></span>
@@ -352,44 +387,52 @@
         <span class="logo-mark" aria-hidden="true">S</span>
         <span><span class="brand-name">SAHAS</span><span class="brand-tag">My Secret Friend</span></span>
       </a>
-      <div class="trust-badge"><span class="live-dot"></span><span>Anonymous • Stateless • No History • <span id="topLiveCount">1287</span> online</span></div>
+      <div class="trust-badge"><span class="live-dot"></span><span>No account • One question at a time • No saved history</span></div>
       <button class="panic-button" type="button" onclick="panic()" aria-label="Quick exit to Google">↗ <span>Quick exit</span></button>
     </header>
 
     <main id="top">
       <div class="layout">
         <section class="intro" aria-labelledby="hero-title">
-          <div class="eyebrow">A little courage, whenever you need it</div>
-          <h1 id="hero-title">Ask anything.<br>Your doubts <span class="gradient-text">stay yours.</span></h1>
-          <p class="intro-copy"><strong>SAHAS</strong> means courage in Sanskrit: <strong>Safe Anonymous Help And Support.</strong> A quiet place to talk through college life, one small step at a time.</p>
+          <div class="eyebrow">A friendly place to start</div>
+          <h1 id="hero-title">College questions?<br>Start with <span class="gradient-text">one small step.</span></h1>
+          <p class="intro-copy"><strong>SAHAS</strong> (Safe Anonymous Help And Support) is a simple student-support chatbot. Tell it what is on your mind—like exams, attendance, backlogs, or feeling lonely—and its AI will offer a kind reply and a practical next step. <strong>No technical knowledge or account is needed.</strong></p>
+          <div class="intro-action">
+            <button class="example-button" id="exampleButton" type="button">Try an example question</button>
+            <span class="intro-action-note">We’ll fill in a sample. Review it, then choose Send.</span>
+          </div>
+
+          <div class="how-it-works">
+            <h2>How to use it</h2>
+            <ol>
+              <li>Choose an example or type a question, then select Send.</li>
+              <li>Read the reply and suggestion from the AI.</li>
+              <li>Ask another question whenever you like. Each question starts fresh, so the AI does not remember earlier messages.</li>
+            </ol>
+          </div>
 
           <div class="feature-grid" aria-label="SAHAS features">
-            <article class="feature"><span class="feature-icon" aria-hidden="true">◌</span><h3>No History</h3><p>Your chat stays in this tab and disappears when cleared.</p></article>
-            <article class="feature"><span class="feature-icon" aria-hidden="true">◇</span><h3>Anonymous</h3><p>No account. No name needed. Just start where you are.</p></article>
-            <article class="feature"><span class="feature-icon" aria-hidden="true">✳</span><h3>Instant</h3><p>A friendly reply, with one small next step.</p></article>
-            <article class="feature"><span class="feature-icon" aria-hidden="true">文</span><h3>Multilingual</h3><p>English, Telugu, Hindi, or Tamil. Your words, your way.</p></article>
+            <article class="feature"><span class="feature-icon" aria-hidden="true">◌</span><h3>Fresh every time</h3><p>Only your latest question is sent for a reply. Earlier chat messages are not included.</p></article>
+            <article class="feature"><span class="feature-icon" aria-hidden="true">◇</span><h3>No account needed</h3><p>You do not need to sign up or enter your name to use the chat.</p></article>
+            <article class="feature"><span class="feature-icon" aria-hidden="true">✳</span><h3>Simple suggestions</h3><p>Get a supportive response and one manageable next step.</p></article>
+            <article class="feature"><span class="feature-icon" aria-hidden="true">文</span><h3>Use your language</h3><p>Ask in English, Telugu, Hindi, Tamil, or the language you are comfortable with.</p></article>
           </div>
         </section>
 
-        <section class="chat-card" aria-label="Chat with SAHAS">
+        <section class="chat-card" id="chatCard" aria-labelledby="chat-heading">
           <div class="mood-bar" aria-hidden="true"></div>
           <header class="chat-head">
             <div class="assistant-id">
               <div class="assistant-avatar" aria-hidden="true">✦</div>
-              <div><h2 class="assistant-title">Your secret friend</h2><div class="assistant-status"><span class="live-dot"></span>Here with you</div></div>
+              <div><h2 class="assistant-title" id="chat-heading">SAHAS student-support AI</h2><div class="assistant-status">A fresh answer to each question</div></div>
             </div>
             <div class="chat-tools">
-              <span class="online-count"><span id="chatLiveCount">1287</span> here now</span>
               <button class="icon-button" type="button" onclick="clearChat()" title="Clear chat" aria-label="Clear chat">⌫</button>
             </div>
           </header>
 
-          <div class="chat-box" id="chatBox" aria-live="polite" aria-label="Conversation">
-            <p class="welcome-note">This is a private, browser-only chat. It is not saved or sent anywhere.</p>
-            <div class="message-row bot">
-              <span class="message-avatar" aria-hidden="true">S</span>
-              <div class="message-bubble">Hey, I’m here. College can feel like a lot sometimes. What’s on your mind?</div>
-            </div>
+          <div class="chat-box" id="chatBox" role="log" aria-live="polite" aria-relevant="additions" aria-label="Chat messages" tabindex="0">
+            <p class="welcome-note">SAHAS is an AI helper. Messages stay here until you clear the chat.</p>
           </div>
 
           <div class="prompt-chips" aria-label="Quick prompts">
@@ -403,11 +446,11 @@
           <form class="composer" id="chatForm">
             <div class="input-wrap">
               <textarea id="messageInput" rows="1" maxlength="1000" placeholder="Type what’s on your mind..." aria-label="Your message"></textarea>
-              <button class="voice-button" id="voiceButton" type="button" onclick="toggleVoice()" title="Use voice input" aria-label="Use voice input">🎤</button>
+              <button class="voice-button" id="voiceButton" type="button" onclick="toggleVoice()" title="Start voice chat" aria-label="Start voice chat" aria-pressed="false">🎤</button>
               <button class="send-button" type="submit" aria-label="Send message">➤</button>
             </div>
             <p class="voice-status" id="voiceStatus" role="status" aria-live="polite"></p>
-            <p class="privacy-note">No sign-in. No saved chat. You can clear this conversation anytime.</p>
+            <p class="privacy-note">Tap the microphone once for hands-free voice chat. Your recording is sent to an external AI service for transcription; avoid sharing identifying details.</p>
           </form>
         </section>
       </div>
@@ -415,7 +458,7 @@
 
     <footer>
       <div><strong>SAHAS</strong> — Safe Anonymous Help And Support</div>
-      <div class="footer-right">HTML Only • Stateless • Built for Final Year Project</div>
+      <div class="footer-right">AI support, not professional care • No saved chat history</div>
     </footer>
   </div>
 
@@ -425,42 +468,26 @@
     const chatForm = document.getElementById('chatForm');
     const voiceButton = document.getElementById('voiceButton');
     const voiceStatus = document.getElementById('voiceStatus');
-    let recognition = null;
-
-    const replies = {
-      en: {
-        backlog: 'That sounds heavy, but you can take it one paper at a time. Pick the subject that feels most manageable and study for 45 minutes, then rest for 10. Which paper would you start with?',
-        lonely: 'Feeling lonely can really sting, especially on campus. Try sitting with someone at the mess or taking a short walk with a classmate today. A lot of students feel this way, even if they don’t show it. Want to tell me what’s been making it feel strongest?',
-        attendance: 'That worry can build up quickly. Check the exact attendance shortfall and ask your class advisor what options are still open. What’s the main thing making attendance difficult right now?',
-        ragging: 'I’m sorry this is happening. You deserve to feel safe. Please tell a trusted faculty member, warden, or your college anti-ragging cell today, and stay near someone you trust. Are you somewhere safe right now?',
-        anxiety: 'That sounds like a lot to carry. Try one slow breath out, then name the next tiny thing you can do in the next ten minutes. What part feels most urgent right now?',
-        default: 'I’m listening. You don’t have to explain it perfectly. What feels like the hardest part right now?'
-      },
-      te: {
-        backlog: 'Backlogs unnai ante pressure ga untundi, kani okka subject tho start cheddam. Manageable ga anipinche paper ni 45 minutes chaduvu, tarvata 10 minutes break teesuko. First ye subject try chesthav?',
-        lonely: 'Lonely ga feel avvadam chala kashtam, especially college lo. Ee roju mess lo evarithonaina kurchovadam leda classmate tho short walk try cheyyi. Chala mandi students ila feel avutharu, kani bayataki chepparu. Ee feeling eppudu ekkuva avuthundi?',
-        attendance: 'Attendance gurinchi tension ravatam natural. Exact percentage check chesi, class advisor ni options gurinchi adagandi. Attendance ki main ga em obstacle avuthondi?',
-        ragging: 'Idi jarugutunnanduku sorry. Nee safety important. Trusted faculty, warden, leda college anti-ragging cell ki ivvale cheppu; nammakam unna person daggara undu. Ippudu safe place lo unnava?',
-        anxiety: 'Chala pressure ga undochu. Oka slow breath bayataki vadili, next 10 minutes lo cheyyagalige chinna pani okati choose cheyyi. Ippudu ekkuva tension deni gurinchi?',
-        default: 'Nenu vintunnanu. Perfect ga explain cheyyalsina avasaram ledu. Ippudu hardest ga anipistunna vishayam enti?'
-      },
-      hi: {
-        backlog: 'Backlogs ka pressure kaafi lag sakta hai, par ek subject se shuru karte hain. Jo paper manageable lage, usse 45 minute padho, phir 10 minute ka break lo. Pehle kis subject se shuru karoge?',
-        lonely: 'Lonely feel karna sach mein mushkil hota hai, khaaskar college mein. Aaj mess mein kisi ke saath baitho ya classmate ke saath chhoti walk try karo. Bahut students aisa feel karte hain, bas dikhate nahi. Ye feeling sabse zyada kab aati hai?',
-        attendance: 'Attendance ki tension badh sakti hai. Exact percentage check karo aur class advisor se available options poochho. Attendance mein sabse badi dikkat kya aa rahi hai?',
-        ragging: 'Mujhe afsos hai ki ye ho raha hai. Tumhari safety zaroori hai. Aaj hi trusted faculty, warden, ya college anti-ragging cell ko batao, aur kisi bharosemand insaan ke paas raho. Kya tum abhi safe jagah par ho?',
-        anxiety: 'Ye sab sambhalna mushkil lag sakta hai. Dheere se saans bahar chhodo, phir agle 10 minute ka ek chhota kaam chuno. Abhi sabse zyada fikr kis baat ki hai?',
-        default: 'Main sun raha hoon. Sab kuch sahi tarah samjhana zaroori nahi. Abhi sabse mushkil kya lag raha hai?'
-      },
-      ta: {
-        backlog: 'Backlog irukkaradhu pressure-a irukkalam, aana oru subject-la start pannalaam. Manageable-a irukkura paper-a 45 minutes padi, appuram 10 minutes break edu. Mudhal-la endha subject?',
-        lonely: 'College-la lonely-a feel pannradhu romba kashtam. Innaikku mess-la yaaravadhu kooda ukkaaru illa classmate-oda oru short walk po. Neraya students ippadi feel pannuvaanga, aana solla maattaanga. Indha feeling eppo adhigama irukku?',
-        attendance: 'Attendance pathi tension varradhu puriyudhu. Exact percentage check panni, class advisor-kitta options enna-nu kelu. Attendance-ku periya obstacle enna?',
-        ragging: 'Idhu nadakkaradhu varuthama irukku. Un safety mukkiyam. Nambikkaiyana faculty, warden, illa college anti-ragging cell-kitta innaikke sollu; nambikkaiyana oruthar kooda iru. Ippo safe-a irukkiya?',
-        anxiety: 'Idhu romba heavy-a irukkalam. Methuva moochai veliya vittu, adutha 10 minutes-la panna mudinja chinna velaiya choose pannu. Ippo edhu romba worry-a irukku?',
-        default: 'Naan kekkaren. Perfect-a explain panna thevai illa. Ippo romba kashtama irukkura vishayam edhu?'
-      }
-    };
+    const sendButton = chatForm.querySelector('.send-button');
+    let isSending = false;
+    let chatRevision = 0;
+    let activeRequestController = null;
+    let mediaRecorder = null;
+    let recordingStream = null;
+    let audioContext = null;
+    let audioAnalyser = null;
+    let audioSamples = null;
+    let recordedChunks = [];
+    let recordingTimer = null;
+    let silenceDetectionTimer = null;
+    let transcriptionController = null;
+    let isVoiceStarting = false;
+    let isTranscribing = false;
+    let voiceRevision = 0;
+    let voiceModeActive = false;
+    let transcribeAfterRecording = true;
+    let speechDetected = false;
+    let lastSpeechAt = 0;
 
     function detectLang(text) {
       if (/[\u0C00-\u0C7F]/.test(text)) return 'te';
@@ -473,16 +500,9 @@
       return 'en';
     }
 
-    function detectMood(text) {
+    function isCrisisMessage(text) {
       const lower = text.toLowerCase();
-      const crisis = /\b(suicide|suicidal|kill myself|end my life|want to die|die|dying|chavu|chachipovali|marana|maranam|மரணம்|தற்கொலை|आत्महत्या|मरना|मर जाऊं)\b/.test(lower) || /చచ్చిపోవాలి|చావాలి|చనిపోవాలి/.test(lower);
-      if (crisis) return 'crisis';
-      if (/ragging|harass|bully|துன்புறுத்தல்|రాగింగ్|रैगिंग/.test(lower)) return 'ragging';
-      if (/backlog|arrear|supply|back paper|బ్యాక్.?లాగ్|బ్యాక్.?లాగ్స్/.test(lower)) return 'backlog';
-      if (/lonely|alone|no friends|isolated|ఒంటరి|ఒంటరిగా|अकेला|தனிமை/.test(lower)) return 'lonely';
-      if (/attendance|absent|shortage|హాజరు|उपस्थिति|வருகை/.test(lower)) return 'attendance';
-      if (/anxious|anxiety|panic|stress|overwhelmed|టెన్షన్|ఆందోళన|चिंता|घबराहट|பதட்டம்/.test(lower)) return 'anxiety';
-      return 'default';
+      return /\b(suicide|suicidal|kill myself|end my life|want to die|die|dying|chavu|chachipovali|marana|maranam|மரணம்|தற்கொலை|आत्महत्या|मरना|मर जाऊं)\b/.test(lower) || /చచ్చిపోవాలి|చావాలి|చనిపోవాలి/.test(lower);
     }
 
     function appendMessage(text, who, crisis = false) {
@@ -521,47 +541,91 @@
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    function makeReply(text) {
+    function crisisReply(text) {
       const language = detectLang(text);
-      const mood = detectMood(text);
-      if (mood === 'crisis') {
-        const crisisReplies = {
-          en: 'I’m really glad you told me. Please call Tele MANAS at 14416 now, and go sit with a trusted friend, warden, or family member. If you may act on these thoughts soon, go to the nearest emergency department or call local emergency services. Are you with someone right now?',
-          te: 'నాతో చెప్పినందుకు సంతోషం. ఇప్పుడే Tele MANAS 14416 కి కాల్ చెయ్యి, నమ్మకమైన స్నేహితుడు లేదా వార్డెన్ దగ్గరకు వెళ్ళు. వెంటనే ప్రమాదం అనిపిస్తే దగ్గరలోని ఎమర్జెన్సీ సహాయం తీసుకో. ఇప్పుడు నీతో ఎవరైనా ఉన్నారా?',
-          hi: 'मुझे खुशी है कि तुमने बताया। अभी Tele MANAS 14416 पर कॉल करो और किसी भरोसेमंद दोस्त, वॉर्डन या परिवार के सदस्य के पास जाओ। तुरंत खतरा लगे तो नज़दीकी इमरजेंसी सेवा लो। क्या अभी कोई तुम्हारे साथ है?',
-          ta: 'என்னிடம் சொன்னது நல்லது. இப்போதே Tele MANAS 14416-க்கு அழைத்து, நம்பிக்கையான நண்பர் அல்லது வார்டன் அருகே செல்லுங்கள். உடனடி ஆபத்து இருந்தால் அருகிலுள்ள அவசர உதவியை நாடுங்கள். இப்போது உங்களுடன் யாராவது இருக்கிறார்களா?'
-        };
-        return { text: crisisReplies[language], crisis: true };
-      }
-      return { text: replies[language][mood] || replies[language].default, crisis: false };
+      const crisisReplies = {
+        en: 'I’m really glad you told me. Please call Tele MANAS at 14416 now, and go sit with a trusted friend, warden, or family member. If you may act on these thoughts soon, go to the nearest emergency department or call local emergency services. Are you with someone right now?',
+        te: 'నాతో చెప్పినందుకు సంతోషం. ఇప్పుడే Tele MANAS 14416 కి కాల్ చెయ్యి, నమ్మకమైన స్నేహితుడు లేదా వార్డెన్ దగ్గరకు వెళ్ళు. వెంటనే ప్రమాదం అనిపిస్తే దగ్గరలోని ఎమర్జెన్సీ సహాయం తీసుకో. ఇప్పుడు నీతో ఎవరైనా ఉన్నారా?',
+        hi: 'मुझे खुशी है कि तुमने बताया। अभी Tele MANAS 14416 पर कॉल करो और किसी भरोसेमंद दोस्त, वॉर्डन या परिवार के सदस्य के पास जाओ। तुरंत खतरा लगे तो नज़दीकी इमरजेंसी सेवा लो। क्या अभी कोई तुम्हारे साथ है?',
+        ta: 'என்னிடம் சொன்னது நல்லது. இப்போதே Tele MANAS 14416-க்கு அழைத்து, நம்பிக்கையான நண்பர் அல்லது வார்டன் அருகே செல்லுங்கள். உடனடி ஆபத்து இருந்தால் அருகிலுள்ள அவசர உதவியை நாடுங்கள். இப்போது உங்களுடன் யாராவது இருக்கிறார்களா?'
+      };
+      return crisisReplies[language];
     }
 
     function speakFirstSentence(text) {
-      if (!('speechSynthesis' in window)) return;
+      if (!('speechSynthesis' in window)) return Promise.resolve();
       window.speechSynthesis.cancel();
       const firstSentence = text.split(/[.!?。！？]/)[0].trim();
-      if (!firstSentence) return;
+      if (!firstSentence) return Promise.resolve();
       const utterance = new SpeechSynthesisUtterance(firstSentence);
       const language = detectLang(text);
       utterance.lang = { en: 'en-IN', te: 'te-IN', hi: 'hi-IN', ta: 'ta-IN' }[language];
       utterance.rate = 0.96;
+      const speechFinished = new Promise((resolve) => {
+        const timeout = window.setTimeout(resolve, 15_000);
+        const finish = () => {
+          window.clearTimeout(timeout);
+          resolve();
+        };
+        utterance.onend = finish;
+        utterance.onerror = finish;
+      });
       window.speechSynthesis.speak(utterance);
+      return speechFinished;
     }
 
-    function sendMessage(text) {
+    async function sendMessage(text, speakReply = false) {
       const trimmed = text.trim();
-      if (!trimmed) return;
+      if (!trimmed || isSending) return;
       appendMessage(trimmed, 'user');
       messageInput.value = '';
       messageInput.style.height = 'auto';
       showTyping();
-      window.setTimeout(() => {
+      isSending = true;
+      sendButton.disabled = true;
+      const requestRevision = chatRevision;
+
+      try {
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (isCrisisMessage(trimmed)) {
+          const reply = crisisReply(trimmed);
+          if (typingIndicator) typingIndicator.remove();
+          appendMessage(reply, 'bot', true);
+          if (speakReply) await speakFirstSentence(reply);
+          return;
+        }
+
+        const requestController = new AbortController();
+        activeRequestController = requestController;
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: [{ role: 'user', parts: [{ text: trimmed }] }] }),
+          signal: requestController.signal
+        });
+        if (requestRevision !== chatRevision) return;
+        const data = await response.json();
+        if (requestRevision !== chatRevision) return;
+        if (!response.ok) throw new Error(data.error || 'The AI service could not reply. Please try again.');
+        if (typeof data.reply !== 'string' || !data.reply.trim()) {
+          throw new Error('The AI service returned an empty reply. Please try again.');
+        }
+        if (typingIndicator) typingIndicator.remove();
+        appendMessage(data.reply, 'bot');
+        if (speakReply) await speakFirstSentence(data.reply);
+      } catch (error) {
+        if (requestRevision !== chatRevision) return;
         const typingIndicator = document.getElementById('typingIndicator');
         if (typingIndicator) typingIndicator.remove();
-        const reply = makeReply(trimmed);
-        appendMessage(reply.text, 'bot', reply.crisis);
-        speakFirstSentence(reply.text);
-      }, 520);
+        appendMessage(error.message || 'I could not connect to the AI service. Please try again.');
+      } finally {
+        if (requestRevision === chatRevision) {
+          isSending = false;
+          sendButton.disabled = false;
+          activeRequestController = null;
+          if (voiceModeActive) void startVoiceRecording();
+        }
+      }
     }
 
     chatForm.addEventListener('submit', (event) => {
@@ -587,74 +651,271 @@
 
     function clearChat() {
       window.speechSynthesis?.cancel();
-      chatBox.innerHTML = '<p class="welcome-note">This is a private, browser-only chat. It is not saved or sent anywhere.</p>';
-      appendMessage('Hey, I’m here. College can feel like a lot sometimes. What’s on your mind?', 'bot');
+      stopVoiceCapture();
+      chatRevision += 1;
+      activeRequestController?.abort();
+      activeRequestController = null;
+      isSending = false;
+      sendButton.disabled = false;
+      chatBox.innerHTML = '<p class="welcome-note">SAHAS is an AI helper. Messages stay here until you clear the chat.</p>';
       messageInput.focus();
     }
 
-    function toggleVoice() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        voiceStatus.textContent = 'Voice input is not available in this browser. You can type your message instead.';
+    document.getElementById('exampleButton').addEventListener('click', () => {
+      messageInput.value = 'I am worried about my exams. What is one small step I can take?';
+      messageInput.dispatchEvent(new Event('input'));
+      document.getElementById('chatCard').scrollIntoView({ block: 'center' });
+      messageInput.focus();
+    });
+
+    function stopVoiceCapture() {
+      voiceRevision += 1;
+      voiceModeActive = false;
+      window.clearTimeout(recordingTimer);
+      window.clearInterval(silenceDetectionTimer);
+      transcriptionController?.abort();
+      transcriptionController = null;
+      isTranscribing = false;
+      if (mediaRecorder) {
+        mediaRecorder.onstop = null;
+        if (mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+        mediaRecorder = null;
+      }
+      isVoiceStarting = false;
+      if (audioContext && audioContext.state !== 'closed') {
+        const context = audioContext;
+        context.close().catch((error) => console.error('Could not close audio monitor:', error));
+      }
+      audioContext = null;
+      audioAnalyser = null;
+      audioSamples = null;
+      recordingStream?.getTracks().forEach((track) => track.stop());
+      recordingStream = null;
+      recordedChunks = [];
+      voiceButton.disabled = false;
+      voiceButton.classList.remove('listening');
+      voiceButton.title = 'Start voice chat';
+      voiceButton.setAttribute('aria-label', 'Start voice chat');
+      voiceButton.setAttribute('aria-pressed', 'false');
+    }
+
+    function scheduleVoiceRestart(requestRevision) {
+      if (!voiceModeActive || requestRevision !== voiceRevision) return;
+      window.setTimeout(() => {
+        if (voiceModeActive && requestRevision === voiceRevision) void startVoiceRecording();
+      }, 250);
+    }
+
+    function stopRecording(status, transcribe = true) {
+      if (!mediaRecorder || mediaRecorder.state === 'inactive') return;
+      window.clearTimeout(recordingTimer);
+      window.clearInterval(silenceDetectionTimer);
+      transcribeAfterRecording = transcribe;
+      voiceButton.disabled = true;
+      voiceStatus.textContent = status;
+      mediaRecorder.stop();
+    }
+
+    async function toggleVoice() {
+      if (voiceModeActive) {
+        stopVoiceCapture();
+        voiceStatus.textContent = 'Voice chat stopped.';
         return;
       }
-      if (recognition) {
-        recognition.stop();
+
+      if (isSending || isTranscribing || isVoiceStarting) return;
+      if (!navigator.mediaDevices?.getUserMedia || typeof window.MediaRecorder === 'undefined') {
+        voiceStatus.textContent = 'Voice recording is not available in this browser. Try a current browser or type your message.';
         return;
       }
-      voiceStatus.textContent = 'Listening...';
-      recognition = new SpeechRecognition();
-      recognition.lang = 'en-IN';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-      voiceButton.classList.add('listening');
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        messageInput.value = [messageInput.value.trim(), transcript].filter(Boolean).join(' ');
-        messageInput.dispatchEvent(new Event('input'));
-        messageInput.focus();
-        voiceStatus.textContent = 'Voice captured. Review your message, then send it.';
-      };
-      recognition.onerror = (event) => {
-        const messages = {
-          'no-speech': 'No speech heard. Try again or type your message.',
-          'not-allowed': 'Allow microphone access in your browser, or type your message.',
-          'service-not-allowed': 'Microphone access is blocked. Check browser permissions or type your message.',
-          'audio-capture': 'No microphone was found. You can type your message instead.',
-          network: 'Voice input could not connect. Try again or type your message.'
-        };
-        voiceStatus.textContent = messages[event.error] || 'Voice input failed. Try again or type your message.';
-      };
-      recognition.onend = () => {
-        voiceButton.classList.remove('listening');
-        recognition = null;
-      };
+
+      voiceModeActive = true;
+      voiceRevision += 1;
+      voiceButton.title = 'Stop voice chat';
+      voiceButton.setAttribute('aria-label', 'Stop voice chat');
+      voiceStatus.textContent = 'Starting voice chat...';
+      void startVoiceRecording();
+    }
+
+    async function startVoiceRecording() {
+      if (!voiceModeActive || isSending || isTranscribing || isVoiceStarting || mediaRecorder) return;
+
+      isVoiceStarting = true;
+      const requestRevision = voiceRevision;
       try {
-        recognition.start();
-      } catch {
-        recognition = null;
+        recordingStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        if (requestRevision !== voiceRevision) {
+          recordingStream.getTracks().forEach((track) => track.stop());
+          recordingStream = null;
+          return;
+        }
+        const mimeType = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg']
+          .find((type) => MediaRecorder.isTypeSupported(type));
+        mediaRecorder = mimeType
+          ? new MediaRecorder(recordingStream, { mimeType })
+          : new MediaRecorder(recordingStream);
+        recordedChunks = [];
+        transcribeAfterRecording = true;
+        speechDetected = false;
+        lastSpeechAt = 0;
+        const recorder = mediaRecorder;
+        recorder.addEventListener('dataavailable', (event) => {
+          if (event.data.size > 0) recordedChunks.push(event.data);
+        });
+        recorder.addEventListener('stop', async () => {
+          const audio = new Blob(recordedChunks, { type: recorder.mimeType || 'audio/webm' });
+          recordingStream?.getTracks().forEach((track) => track.stop());
+          recordingStream = null;
+          recordedChunks = [];
+          mediaRecorder = null;
+          window.clearTimeout(recordingTimer);
+          window.clearInterval(silenceDetectionTimer);
+          if (audioContext && audioContext.state !== 'closed') {
+            audioContext.close().catch((error) => console.error('Could not close audio monitor:', error));
+          }
+          audioContext = null;
+          audioAnalyser = null;
+          audioSamples = null;
+          voiceButton.classList.remove('listening');
+          voiceButton.title = voiceModeActive ? 'Stop voice chat' : 'Start voice chat';
+          voiceButton.setAttribute('aria-label', voiceModeActive ? 'Stop voice chat' : 'Start voice chat');
+          voiceButton.setAttribute('aria-pressed', String(voiceModeActive));
+          if (requestRevision !== voiceRevision) return;
+          if (!transcribeAfterRecording) {
+            voiceButton.disabled = false;
+            voiceStatus.textContent = 'No speech detected. Listening again...';
+            scheduleVoiceRestart(requestRevision);
+            return;
+          }
+          if (!audio.size) {
+            voiceButton.disabled = false;
+            voiceStatus.textContent = 'No audio was recorded. Listening again...';
+            scheduleVoiceRestart(requestRevision);
+            return;
+          }
+
+          isTranscribing = true;
+          voiceButton.disabled = true;
+          voiceStatus.textContent = 'Transcribing your voice...';
+          const controller = new AbortController();
+          transcriptionController = controller;
+          try {
+            const response = await fetch('/api/transcribe', {
+              method: 'POST',
+              headers: { 'Content-Type': audio.type || 'audio/webm' },
+              body: audio,
+              signal: controller.signal
+            });
+            if (requestRevision !== voiceRevision) return;
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Voice transcription failed. Please try again.');
+            if (typeof data.transcript !== 'string' || !data.transcript.trim()) {
+              throw new Error('No speech was recognized. Try again or type your message.');
+            }
+            const message = [messageInput.value.trim(), data.transcript.trim()].filter(Boolean).join(' ');
+            messageInput.value = message;
+            messageInput.dispatchEvent(new Event('input'));
+            voiceStatus.textContent = 'Voice recognized. Sending your message...';
+            await sendMessage(message, true);
+            if (requestRevision === voiceRevision) {
+              voiceStatus.textContent = 'Voice message sent.';
+            }
+          } catch (error) {
+            if (requestRevision === voiceRevision) {
+              voiceStatus.textContent = error.message || 'Voice transcription failed. Please try again or type your message.';
+            }
+          } finally {
+            if (requestRevision === voiceRevision) {
+              isTranscribing = false;
+              voiceButton.disabled = false;
+              transcriptionController = null;
+              scheduleVoiceRestart(requestRevision);
+            }
+          }
+        }, { once: true });
+        recorder.start();
+        isVoiceStarting = false;
+        voiceButton.classList.add('listening');
+        voiceButton.title = 'Stop voice chat';
+        voiceButton.setAttribute('aria-label', 'Stop voice chat');
+        voiceButton.setAttribute('aria-pressed', 'true');
+        const AudioContextType = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextType) {
+          try {
+            audioContext = new AudioContextType();
+            audioAnalyser = audioContext.createAnalyser();
+            audioAnalyser.fftSize = 2048;
+            audioSamples = new Float32Array(audioAnalyser.fftSize);
+            audioContext.createMediaStreamSource(recordingStream).connect(audioAnalyser);
+            if (audioContext.state === 'suspended') {
+              audioContext.resume().catch((error) => console.error('Could not start audio monitor:', error));
+            }
+            const recordingStartedAt = Date.now();
+            silenceDetectionTimer = window.setInterval(() => {
+              if (!mediaRecorder || mediaRecorder !== recorder || recorder.state !== 'recording') return;
+              audioAnalyser.getFloatTimeDomainData(audioSamples);
+              let energy = 0;
+              for (const sample of audioSamples) energy += sample * sample;
+              const volume = Math.sqrt(energy / audioSamples.length);
+              const now = Date.now();
+              if (volume > 0.02) {
+                speechDetected = true;
+                lastSpeechAt = now;
+              } else if (speechDetected && now - lastSpeechAt >= 1800) {
+                stopRecording('You finished speaking. Transcribing and sending...', true);
+              } else if (!speechDetected && now - recordingStartedAt >= 10_000) {
+                voiceStatus.textContent = 'No speech detected. Tap the microphone to try again.';
+                stopRecording(voiceStatus.textContent, false);
+              }
+            }, 100);
+            voiceStatus.textContent = 'Listening. Speak when ready; messages send automatically, and I’ll listen again after each reply.';
+          } catch (error) {
+            console.error('Automatic voice detection is unavailable:', error);
+            audioContext?.close().catch((closeError) => console.error('Could not close audio monitor:', closeError));
+            audioContext = null;
+            audioAnalyser = null;
+            audioSamples = null;
+            voiceStatus.textContent = 'Recording... Tap the microphone when you finish to transcribe and send.';
+          }
+        } else {
+          voiceStatus.textContent = 'Recording... Tap the microphone when you finish to transcribe and send.';
+        }
+        recordingTimer = window.setTimeout(() => {
+          if (mediaRecorder === recorder && recorder.state === 'recording') {
+            stopRecording('Recording limit reached. Transcribing and sending...', true);
+          }
+        }, 60_000);
+      } catch (error) {
+        isVoiceStarting = false;
+        recordingStream?.getTracks().forEach((track) => track.stop());
+        recordingStream = null;
+        mediaRecorder = null;
         voiceButton.classList.remove('listening');
-        voiceStatus.textContent = 'Microphone could not start. Check browser permissions or type your message.';
+        if (requestRevision !== voiceRevision) return;
+        voiceModeActive = false;
+        voiceButton.title = 'Start voice chat';
+        voiceButton.setAttribute('aria-label', 'Start voice chat');
+        voiceButton.setAttribute('aria-pressed', 'false');
+        if (error.name === 'NotAllowedError' || error.name === 'SecurityError') {
+          voiceStatus.textContent = 'Allow microphone access in your browser settings, then try again.';
+        } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+          voiceStatus.textContent = 'No microphone was found. You can type your message instead.';
+        } else {
+          voiceStatus.textContent = 'Microphone could not start. Check browser permissions or try typing your message.';
+        }
       }
     }
 
     function panic() {
-      if (recognition) recognition.stop();
+      stopVoiceCapture();
       window.speechSynthesis?.cancel();
       document.body.innerHTML = '<main class="panic-screen"><div class="fake-search-logo">Google</div><div class="fake-search">Search the web</div><p>Search the web for information and helpful resources.</p></main>';
       window.setTimeout(() => window.location.replace('https://www.google.com'), 350);
     }
 
-    function updateLiveCount() {
-      const count = Math.floor(1200 + Math.random() * 201);
-      document.getElementById('topLiveCount').textContent = count;
-      document.getElementById('chatLiveCount').textContent = count;
-    }
-
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') panic();
     });
-    window.setInterval(updateLiveCount, 5000);
   </script>
 </body>
 </html>

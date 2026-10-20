@@ -1,0 +1,16 @@
+{
+  "name": "sahas-my-secret-friend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Anonymous student support chat powered by Gemini",
+  "engines": {
+    "node": ">=20.6.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  }
+}
